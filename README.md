@@ -4,14 +4,13 @@ Một DApp đơn giản được xây dựng bằng **Next.js + TypeScript + Eth
 Ứng dụng cho phép:
 - Kết nối ví MetaMask
 - Hiển thị số dư ETH
-- Hiển thị số dư token ERC20 (USDT Sepolia testnet)
-- Gửi token ERC20 đến ví khác
+- Gửi ETH đến ví khác
 
 ---
 
 ## ⚡️ Demo
-👉 [Link demo trên Vercel](https://your-vercel-app-url.vercel.app)  
-👉 [Source code trên GitHub](https://github.com/your-username/my-dapp)
+👉 [Link demo trên Vercel](https://pxman-DApp.vercel.app)  
+👉 [Source code trên GitHub](https://github.com/pxman1012/pxman-DApp)
 
 ---
 
@@ -28,9 +27,9 @@ Một DApp đơn giản được xây dựng bằng **Next.js + TypeScript + Eth
 ```
 pxman-dapp/
 │── components/
-│ ├── ConnectWalletButton.tsx # Component kết nối ví
-│ ├── BalanceDisplay.tsx # Hiển thị ETH & Token balance
-│ └── TokenTransferForm.tsx # Form gửi token ERC20
+│ ├── ConnectWallet.tsx # Component kết nối ví
+│ ├── BalanceDisplay.tsx # Hiển thị ETH
+│ └── TokenTransferForm.tsx # Form gửi ETH (+ validate)
 │── pages/
 │ └── index.tsx # Trang chính (kết hợp các component)
 │── package.json
