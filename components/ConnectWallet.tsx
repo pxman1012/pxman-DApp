@@ -1,56 +1,72 @@
 "use client";
-
 import { useEffect, useState } from "react";
+import { ethers } from "ethers";
 
-interface Props {
-    onConnect: (acc: string) => void;
+interface ConnectWalletProps {
+    onConnect: (provider: ethers.BrowserProvider, account: string) => void;
     onDisconnect: () => void;
-    connectedAccount: string;
 }
 
-export default function ConnectWallet({ onConnect, onDisconnect, connectedAccount }: Props) {
-    const [isConnecting, setIsConnecting] = useState(false);
+export default function ConnectWallet({ onConnect, onDisconnect }: ConnectWalletProps) {
+    const [account, setAccount] = useState<string | null>(null);
+    const [provider, setProvider] = useState<ethers.BrowserProvider | null>(null);
 
-    const connect = async () => {
+    useEffect(() => {
+        if (window.ethereum) {
+            const p = new ethers.BrowserProvider(window.ethereum);
+            setProvider(p);
+
+            // 👇 không dùng any
+            window.ethereum.on("accountsChanged", (accs: unknown[]) => {
+                if (Array.isArray(accs) && accs.length > 0 && typeof accs[0] === "string") {
+                    setAccount(accs[0]);
+                    onConnect(p, accs[0]);
+                } else {
+                    setAccount(null);
+                    onDisconnect();
+                }
+            });
+        }
+    }, [onConnect, onDisconnect]);
+
+    const connectWallet = async () => {
+        if (!provider) return;
         try {
-            setIsConnecting(true);
-            if (!(window as any).ethereum) {
-                alert("Bạn cần cài MetaMask!");
-                return;
-            }
-            const accounts: string[] = await (window as any).ethereum.request({
+            const accounts: string[] = await window.ethereum.request({
                 method: "eth_requestAccounts",
             });
             if (accounts.length > 0) {
-                onConnect(accounts[0]);
+                setAccount(accounts[0]);
+                onConnect(provider, accounts[0]);
             }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setIsConnecting(false);
+        } catch (error) {
+            console.error("Kết nối thất bại:", error);
         }
     };
 
+    const disconnectWallet = () => {
+        setAccount(null);
+        onDisconnect();
+    };
+
     return (
-        <div className="p-4 bg-gray-100 rounded-xl text-center">
-            {connectedAccount ? (
-                <div>
-                    {/* <p className="mb-2 break-all">Đã kết nối tài khoản: {connectedAccount}</p> */}
-                    <p className="mb-2 break-all">Đã kết nối</p>
+        <div className="p-4 bg-gray-100 rounded text-center">
+            {account ? (
+                <>
+                    <p className="font-bold">Đã kết nối: {account}</p>
                     <button
-                        onClick={onDisconnect}
-                        className="bg-red-500 text-white px-4 py-2 rounded"
+                        onClick={disconnectWallet}
+                        className="mt-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
                     >
-                        Huỷ kết nối
+                        Ngắt kết nối
                     </button>
-                </div>
+                </>
             ) : (
                 <button
-                    onClick={connect}
-                    disabled={isConnecting}
-                    className="bg-blue-500 text-white px-4 py-2 rounded"
+                    onClick={connectWallet}
+                    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
-                    {isConnecting ? "Đang kết nối..." : "Kết nối ví"}
+                    Kết nối ví
                 </button>
             )}
         </div>
