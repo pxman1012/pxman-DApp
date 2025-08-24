@@ -25,6 +25,7 @@ Một DApp đơn giản được xây dựng bằng **Next.js + TypeScript + Eth
 
 ## 📂 Cấu trúc project
 
+```
 pxman-dapp/
 │── components/
 │ ├── ConnectWalletButton.tsx # Component kết nối ví
@@ -35,6 +36,7 @@ pxman-dapp/
 │── package.json
 │── README.md
 
+```
 ---
 
 ## 🚀 Cách chạy local
@@ -86,5 +88,3 @@ Token Transfer Form: Gửi token ERC20 đến ví khác
 DApp này chỉ chạy trên testnet (Sepolia).
 
 Để test chuyển token, bạn cần ví MetaMask có ETH testnet và USDT testnet.
-
-Đây là project demo cho mục đích học tập & phỏng vấn.
