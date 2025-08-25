@@ -19,13 +19,11 @@ export default function SendEth({ provider, account }: SendEthProps) {
                 return;
             }
 
-            // ✅ Kiểm tra địa chỉ hợp lệ
             if (!ethers.isAddress(to)) {
                 alert("Địa chỉ ví nhận không hợp lệ!");
                 return;
             }
 
-            // ✅ Kiểm tra số ETH nhập vào
             if (isNaN(Number(amount)) || Number(amount) <= 0) {
                 alert("Số lượng ETH phải là số dương hợp lệ!");
                 return;
@@ -33,16 +31,23 @@ export default function SendEth({ provider, account }: SendEthProps) {
 
             const signer = await provider.getSigner();
             const balance = await provider.getBalance(account);
-            const value = ethers.parseEther(amount);
+            const value = ethers.parseEther(amount); // bigint
 
-            // ✅ Kiểm tra số dư
-            if (value > balance) {
-                alert("Không đủ ETH để gửi số lượng này!");
+            // ✅ Gas
+            const gasLimit = BigInt(21000); // bigint literal
+            const feeData = await provider.getFeeData();
+            const maxFeePerGas = feeData.maxFeePerGas ?? feeData.gasPrice ?? ethers.parseUnits("20", "gwei"); // bigint
+            const estimatedFee = gasLimit * maxFeePerGas; // bigint
+
+            // ✅ Kiểm tra tổng số dư
+            const totalCost = value + estimatedFee; // bigint
+            if (balance < totalCost) {
+                alert(`Không đủ ETH để gửi. Tổng cần: ${ethers.formatEther(totalCost)} ETH (gồm phí ${ethers.formatEther(estimatedFee)} ETH)`);
                 return;
             }
 
             // ✅ Thực hiện gửi
-            const tx = await signer.sendTransaction({ to, value });
+            const tx = await signer.sendTransaction({ to, value, gasLimit, maxFeePerGas });
             await tx.wait();
 
             setTxHash(tx.hash);
