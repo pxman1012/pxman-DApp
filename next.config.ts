@@ -1,7 +1,15 @@
-import type { NextConfig } from "next";
+// next.config.js
+import { rewrites as routeRewrites, redirects as routeRedirects } from './routes.config';
+
+import { NextConfig } from 'next'; // optional type import
 
 const nextConfig: NextConfig = {
-  /* config options here */
+    async rewrites() {
+        return routeRewrites;
+    },
+    async redirects() {
+        return routeRedirects;
+    },
 };
 
 export default nextConfig;
