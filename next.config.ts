@@ -1,4 +1,4 @@
-// next.config.js
+// next.config.ts
 import { rewrites as routeRewrites, redirects as routeRedirects } from './routes.config';
 
 import { NextConfig } from 'next'; // optional type import
